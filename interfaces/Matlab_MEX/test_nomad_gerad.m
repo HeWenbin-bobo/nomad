@@ -7,10 +7,11 @@ x0 = [-2 1]';
 lb = [-Inf;-1.5];
 ub = [100;100];
 
+% params = struct('initial_mesh_size','* 10','MAX_BB_EVAL','100','HISTORY_FILE','history.txt');
 params = struct('initial_mesh_size','* 10','MAX_BB_EVAL','100'); 
 
 % Start optimization
-[x,fval,hinf,exit_status,nfeval] = nomadOpt(fun,x0,lb,ub,params);
+[x,fval,hinf,exit_status,nfeval,historyPoints,evalTime] = nomadOpt(fun,x0,lb,ub,params);
 
 
 %Uncomment the following problems for further testing
@@ -29,7 +30,7 @@ params = struct('initial_mesh_size','* 10','MAX_BB_EVAL','100');
 % % Options
 % params = struct('display_degree','2','bb_output_type','OBJ EB','max_bb_eval','50');
 % 
-% [x,fval,hinf,exit_status,nfeval] =  nomadOpt(bb,x0,lb,ub,params);
+% [x,fval,hinf,exit_status,nfeval,historyPoints,evalTime] =  nomadOpt(bb,x0,lb,ub,params);
 % 
 % 
 % 

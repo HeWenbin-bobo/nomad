@@ -108,6 +108,7 @@ private:
     BBOutput _bbOutput;                 ///<  The blackbox evaluation output.
     BBOutputTypeList _bbOutputTypeList; ///< List of output types: OBJ, PB, EB etc.
     bool _bbOutputComplete;             ///< All bbo outputs have a valid value for functions (OBJ, PB and EB).
+    Double _funEvalTime;                ///<
 
 public:
 
@@ -144,6 +145,11 @@ public:
     Double getF(ComputeType = ComputeType::STANDARD) const;
     ArrayOfDouble getFs(ComputeType = ComputeType::STANDARD) const;
     Double getH(ComputeType = ComputeType::STANDARD) const;
+
+    // Get & Set FunEvalTime.
+    void setFunEvalTime(const Double funEvalTime,
+                        const bool evalOk = true);
+    Double getFunEvalTime(ComputeType = ComputeType::STANDARD) const;
 
     EvalStatusType getEvalStatus() const { return _evalStatus; }
     void setEvalStatus(const EvalStatusType &evalStatus) { _evalStatus = evalStatus; }

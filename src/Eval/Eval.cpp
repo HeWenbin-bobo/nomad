@@ -62,7 +62,8 @@ NOMAD::Eval::Eval()
   : _evalStatus(NOMAD::EvalStatusType::EVAL_STATUS_UNDEFINED),
     _bbOutput(""),
     _bbOutputTypeList(),
-    _bbOutputComplete(false)
+    _bbOutputComplete(false),
+    _funEvalTime(0.0)
 {
 }
 
@@ -74,7 +75,8 @@ NOMAD::Eval::Eval(std::shared_ptr<NOMAD::EvalParameters> params,
                   const NOMAD::BBOutput &bbOutput)
   : _evalStatus(NOMAD::EvalStatusType::EVAL_STATUS_UNDEFINED),
     _bbOutput(bbOutput),
-    _bbOutputTypeList(params->getAttributeValue<NOMAD::BBOutputTypeList>("BB_OUTPUT_TYPE"))
+    _bbOutputTypeList(params->getAttributeValue<NOMAD::BBOutputTypeList>("BB_OUTPUT_TYPE")),
+    _funEvalTime(0.0)
 {
     _bbOutputComplete = _bbOutput.isComplete(_bbOutputTypeList);
 
@@ -97,7 +99,8 @@ NOMAD::Eval::Eval(const NOMAD::Eval &eval)
   : _evalStatus(eval._evalStatus),
     _bbOutput(eval._bbOutput),
     _bbOutputTypeList(eval._bbOutputTypeList),
-    _bbOutputComplete(eval._bbOutputComplete)
+    _bbOutputComplete(eval._bbOutputComplete),
+    _funEvalTime(eval._funEvalTime)
 {
 }
 
@@ -232,6 +235,47 @@ NOMAD::Double NOMAD::Eval::getH(NOMAD::ComputeType computeType) const
     }
 
     return h;
+}
+
+
+/*--------------------------*/
+/*      Set FunEvalTime     */
+/*--------------------------*/
+void NOMAD::Eval::setFunEvalTime(const Double funEvalTime,
+                                 const bool evalOk)
+{
+    if (evalOk)
+    {
+        _funEvalTime = funEvalTime;
+    }
+}
+
+
+/*-----------------------------------------------*/
+/*      Get funEvalTime. Always recomputed.      */
+/*-----------------------------------------------*/
+NOMAD::Double NOMAD::Eval::getFunEvalTime(NOMAD::ComputeType computeType) const
+{
+    NOMAD::Double funEvalTime;
+
+    if (NOMAD::EvalStatusType::EVAL_OK != _evalStatus)
+    {
+        return NOMAD::INF;
+    }
+    switch (computeType)
+    {
+        case NOMAD::ComputeType::STANDARD:
+            funEvalTime = _funEvalTime;
+            break;
+        case NOMAD::ComputeType::PHASE_ONE:
+            funEvalTime = 0.0;
+            break;
+        case NOMAD::ComputeType::USER:
+            break;
+        default:
+            throw NOMAD::Exception(__FILE__,__LINE__,"getFunEvalTime(): ComputeType not supported");
+    }
+    return funEvalTime;
 }
 
 

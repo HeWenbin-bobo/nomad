@@ -75,5 +75,14 @@ command in Matlab you may obtain an error such as
  of Matlab and the compiler may not be compatible (See in the preamble 
 the web site to check compatibility).
 
+*******************
+Successful compilation
+*******************
+cmake -DTEST_OPENMP=OFF -DBUILD_INTERFACE_MATLAB=ON -S . -B build/release -A x64
+cmake --build build/release --config Release
+cmake --install build/release
 
-
+*******************
+After compilation
+*******************
+Only need the files in .\nomad\build\release\bin and the main function to call nomadOpt.mexw64

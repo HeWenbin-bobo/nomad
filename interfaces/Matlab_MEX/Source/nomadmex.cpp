@@ -62,6 +62,7 @@
 #include <string.h>
 #include <memory.h>
 
+#include "../../../src/Util/MicroClock.hpp"
 
 using namespace std;
 
@@ -173,29 +174,37 @@ public:
             count_eval = false;
             NOMAD::Step::setUserTerminate();
             return false;
-         }
+        }
 
-         //Blackbox / Objective Evaluation
-         xm = mxGetPr(fun->prhs[fun->xrhs]);
-         for(i=0;i<n;i++)
-             xm[i] = x[i].todouble();
+        //Blackbox / Objective Evaluation
+        xm = mxGetPr(fun->prhs[fun->xrhs]);
+        for(i=0;i<n;i++)
+            xm[i] = x[i].todouble();
 
-         //Add a flag if surrogate eval
-         if( NOMAD::EvalType::SURROGATE == _evalType )
-         {
-             sur=mxGetLogicals(fun->prhs[fun->xrhs+1]);
-             *sur=true;
-         }
+        //Add a flag if surrogate eval
+        if( NOMAD::EvalType::SURROGATE == _evalType )
+        {
+            sur=mxGetLogicals(fun->prhs[fun->xrhs+1]);
+            *sur=true;
+        }
 
-         //Call MATLAB Objective
-         try
-         {
-             // Use Trap to catch some errors on fun eval that are not properly catched as an exception
+        //Init MicroClock to record evaluation time for bb fun
+        NOMAD::MicroClock * microClock = new NOMAD::MicroClock;
+
+        //Call MATLAB Objective
+        try
+        {
+            // Start time of bb function evaluation
+            microClock->start();
+
+            // Use Trap to catch some errors on fun eval that are not properly catched as an exception
 #ifdef BLACKBOX_COUNT_EVAL
             mxArray * except = mexCallMATLABWithTrap(2, fun->plhs, fun->nrhs, fun->prhs, fun->f);
 #else
  			mxArray * except = mexCallMATLABWithTrap(1, fun->plhs, fun->nrhs, fun->prhs, fun->f);
 #endif
+            // End time of bb function evaluation
+            microClock->end();
 
             // Counting eval if Matlab bb has been called
             count_eval = true;
@@ -258,6 +267,7 @@ public:
          }
          x.setBBO(bboStr,_bbOutputTypeList, _evalType);
 		 // mexPrintf("Function output: %s\n", bboStr);
+         x.setFunEvalTime(microClock->getCostTime(), _evalType);
 
 		 //Iteration Callback
 		 if (nullptr != callbackF && callbackF->enabled)
@@ -591,6 +601,31 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     *exitflag = 0;
 
 	*nfval = (double) NOMAD::EvcInterface::getEvaluatorControl()->getBbEval();
+
+	//Save History Points & fvals
+    std::vector<NOMAD::EvalPoint> evalPointsHistory;
+    size_t evalPointsHistorySize = NOMAD::CacheBase::getInstance()->getAllPoints(evalPointsHistory);
+    plhs[5] = mxCreateDoubleMatrix(evalPointsHistorySize, ndec+1, mxREAL);
+    double *historyPoints = mxGetPr(plhs[5]);
+    int j;
+    NOMAD::Point evalPointTemp;
+    for(i=0;i<evalPointsHistorySize;i++)
+    {
+        evalPointTemp = *evalPointsHistory[i].getX();
+        for(j=0;j<ndec;j++)
+        {
+            historyPoints[evalPointsHistorySize*j+i] = evalPointTemp[j].todouble();
+        }
+        historyPoints[evalPointsHistorySize*ndec+i] = evalPointsHistory[i].getF().todouble();
+    }
+
+    //Save evaluation time for bb fun
+    plhs[6] = mxCreateDoubleMatrix(evalPointsHistorySize, 1, mxREAL);
+    double *evalTime = mxGetPr(plhs[6]);
+    for(i=0;i<evalPointsHistorySize;i++)
+    {
+        evalTime[i] = evalPointsHistory[i].getFunEvalTime().todouble();
+    }
 
     // Clean up of fun
     mxDestroyArray(fun.prhs[fun.xrhs]);

@@ -399,6 +399,53 @@ NOMAD::Double NOMAD::EvalPoint::getH(NOMAD::EvalType evalType,
 }
 
 
+NOMAD::Double NOMAD::EvalPoint::getFunEvalTime(NOMAD::EvalType evalType,
+                                               NOMAD::ComputeType computeType) const
+{
+    auto eval = getEval(evalType);
+    if (nullptr == eval || NOMAD::EvalStatusType::EVAL_OK != eval->getEvalStatus())
+    {
+        return NOMAD::INF;
+        // throw NOMAD::Exception(__FILE__,__LINE__,"EvalPoint::getFunEvalTime() called for an EvalPoint that is not EVAL_OK");
+    }
+
+    return eval->getFunEvalTime(computeType);
+}
+
+
+void NOMAD::EvalPoint::setFunEvalTime(const Double funEvalTime,
+                                      NOMAD::EvalType evalType,
+                                      const bool evalOk)
+{
+    // The default (unset) eval type is passed (see library mode examples using simple setBBO(bbo) function. This function is used for simplicity BUT we need to check which eval is in progress. It should not be too costly.
+    // Quad model evaluator passes the eval type explicitely.
+    // Also Evaluator::evalXBBExe passes the eval type explicitely.
+    NOMAD::Eval * eval = nullptr;
+    if (NOMAD::EvalType::LAST == evalType)
+    {
+        // Select the single eval in progress
+        evalType = getSingleEvalType(NOMAD::EvalStatusType::EVAL_IN_PROGRESS);
+    }
+    eval = getEval(evalType);
+
+    if (nullptr == eval)
+    {
+        _eval[(size_t) evalType].reset(new NOMAD::Eval());
+        eval = getEval(evalType);
+    }
+
+    if (nullptr == eval)
+    {
+        throw NOMAD::Exception(__FILE__, __LINE__, "EvalPoint::setFunEvalTime: Could not create new Eval");
+    }
+    else
+    {
+        eval->setFunEvalTime(funEvalTime, evalOk);
+    }
+
+}
+
+
 std::string NOMAD::EvalPoint::getBBO(NOMAD::EvalType evalType) const
 {
     std::string bbo;

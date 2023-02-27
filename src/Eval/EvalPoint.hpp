@@ -101,7 +101,7 @@ private:
     std::shared_ptr<Direction>  _direction; ///< True direction that generated this point. Full dimension.
     Double                      _angle;     ///< Angle of that direction with last successful dir
 
-    std::shared_ptr<MeshBase> _mesh;
+    std::shared_ptr<MeshBase>   _mesh;
     
     
 public:
@@ -185,6 +185,19 @@ public:
 
     /// Get the infeasibility measure of the Eval of this EvalType
     Double getH(EvalType evalType = EvalType::BB, ComputeType computeType = ComputeType::STANDARD) const;
+
+    /// Get the eval time of fun of the Eval of this EvalType
+    Double getFunEvalTime(EvalType evalType = EvalType::BB, ComputeType computeType = ComputeType::STANDARD) const;
+
+    /// Set the eval time of fun of the Eval of this EvalType.
+    /**
+     \param funEvalTime         The string containg the raw result of the blackbox evaluation -- \b IN.
+     \param evalType            Blackbox or model evaluation  -- \b IN.
+     \param evalOk              Flag for evaluation status  -- \b IN.
+    */
+    void NOMAD::EvalPoint::setFunEvalTime(const Double funEvalTime,
+                                          NOMAD::EvalType evalType,
+                                          const bool evalOk = true);
 
     /// Get the blackbox output for the Eval of this EvalType as a \c string
     std::string getBBO(EvalType evalType) const;
