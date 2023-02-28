@@ -409,6 +409,35 @@ void NOMAD::Eval::setBBO(const std::string &bbo,
 }
 
 
+/*--------------------------------------------*/
+/*      Set BBOutput with higher precision    */
+/*--------------------------------------------*/
+void NOMAD::Eval::setBBO(const std::string &bbo,
+                         const NOMAD::ArrayOfDouble &bboArray,
+                         const NOMAD::BBOutputTypeList &bbOutputTypeList,
+                         const bool evalOk)
+{
+    _bbOutput = NOMAD::BBOutput(bbo, bboArray, evalOk);
+    _bbOutputTypeList = bbOutputTypeList;
+
+    if (bbOutputTypeList.empty())
+    {
+        // Assume it will be set later.
+    }
+    else if (!_bbOutput.checkSizeMatch(bbOutputTypeList))
+    {
+        _evalStatus = NOMAD::EvalStatusType::EVAL_ERROR;
+        _bbOutputComplete = false;
+    }
+    else
+    {
+        _bbOutputComplete = _bbOutput.isComplete(_bbOutputTypeList);
+        _evalStatus = _bbOutput.getObjectives(_bbOutputTypeList).isComplete() ? NOMAD::EvalStatusType::EVAL_OK : NOMAD::EvalStatusType::EVAL_FAILED;
+    }
+
+}
+
+
 /*-----------------------------------------------------------*/
 /*                           operator ==                     */
 /*-----------------------------------------------------------*/

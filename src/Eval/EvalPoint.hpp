@@ -214,6 +214,20 @@ public:
                 EvalType evalType = EvalType::LAST,
                 const bool evalOk = true);
 
+    /// Set the blackbox output for the Eval of this EvalType from a \c string and the original array.
+    /**
+     \param bbo                 The string containg the raw result of the blackbox evaluation -- \b IN.
+     \param bboArray            The array containg the raw result of the blackbox evaluation -- \b IN.
+     \param bbOutputTypeList    The list of blackbox output types -- \b IN.
+     \param evalType            Blackbox or model evaluation  -- \b IN.
+     \param evalOk              Flag for evaluation status  -- \b IN.
+    */
+    void setBBO(const std::string &bbo,
+                const ArrayOfDouble &bboArray,
+                const BBOutputTypeList& bbOutputTypeList,
+                EvalType evalType = EvalType::LAST,
+                const bool evalOk = true);
+
     /// Set the true or model blackbox output from a \c string.
     /**
      \param bbo             The string containg the raw result of the blackbox evaluation -- \b IN.

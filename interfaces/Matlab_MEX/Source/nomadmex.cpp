@@ -260,12 +260,15 @@ public:
 		 }
 
          std::string bboStr;
+         NOMAD::ArrayOfDouble bboArray = NOMAD::ArrayOfDouble( nobj+ncon );
          for(i=0;i<(nobj+ncon);i++)
          {
              NOMAD::Double bbo = fvals[i];
-             bboStr += bbo.tostring() + " " ;   
+             bboArray[i] = fvals[i];
+             bboStr += bbo.tostring() + " " ;
          }
-         x.setBBO(bboStr,_bbOutputTypeList, _evalType);
+         // x.setBBO(bboStr,_bbOutputTypeList, _evalType);
+         x.setBBO(bboStr, bboArray, _bbOutputTypeList, _evalType);
 		 // mexPrintf("Function output: %s\n", bboStr);
          x.setFunEvalTime(microClock->getCostTime(), _evalType);
 
@@ -576,13 +579,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         }
         else
         {
-			mexPrintf("Infeasible solution obtained\n");
+            if(p->getAttributeValue<int>("DISPLAY_DEGREE") > 0)
+            {
+			    mexPrintf("Infeasible solution obtained\n");
+			}
             sol = bi[0];
         }
     }
     else
     {
-		mexPrintf("Feasible solution obtained\n");
+        if(p->getAttributeValue<int>("DISPLAY_DEGREE") > 0)
+        {
+		    mexPrintf("Feasible solution obtained\n");
+        }
         sol = bf[0];
     }
 

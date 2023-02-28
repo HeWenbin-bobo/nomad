@@ -495,6 +495,42 @@ void NOMAD::EvalPoint::setBBO(const std::string &bbo,
 
 
 void NOMAD::EvalPoint::setBBO(const std::string &bbo,
+                              const NOMAD::ArrayOfDouble &bboArray,
+                              const NOMAD::BBOutputTypeList &bbOutputTypeList,
+                              NOMAD::EvalType evalType,
+                              const bool evalOk)
+{
+    // The default (unset) eval type is passed (see library mode examples using simple setBBO(bbo) function. This function is used for simplicity BUT we need to check which eval is in progress. It should not be too costly.
+    // Quad model evaluator passes the eval type explicitely.
+    // Also Evaluator::evalXBBExe passes the eval type explicitely.
+    // To maintain higher precision, use ArrayOfDouble here instead of string.
+    NOMAD::Eval * eval = nullptr;
+    if (NOMAD::EvalType::LAST == evalType)
+    {
+        // Select the single eval in progress
+        evalType = getSingleEvalType(NOMAD::EvalStatusType::EVAL_IN_PROGRESS);
+    }
+    eval = getEval(evalType);
+
+    if (nullptr == eval)
+    {
+        _eval[(size_t) evalType].reset(new NOMAD::Eval());
+        eval = getEval(evalType);
+    }
+
+    if (nullptr == eval)
+    {
+        throw NOMAD::Exception(__FILE__, __LINE__, "EvalPoint::setBBO: Could not create new Eval");
+    }
+    else
+    {
+        eval->setBBO(bbo, bboArray, bbOutputTypeList, evalOk);
+    }
+
+}
+
+
+void NOMAD::EvalPoint::setBBO(const std::string &bbo,
                               const std::string &sBBOutputTypes,
                               NOMAD::EvalType evalType,
                               const bool evalOk)

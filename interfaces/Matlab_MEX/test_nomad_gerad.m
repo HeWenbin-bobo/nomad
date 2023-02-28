@@ -17,20 +17,20 @@ params = struct('initial_mesh_size','* 10','MAX_BB_EVAL','100');
 %Uncomment the following problems for further testing
 
 
-% %% PROBLEM 2
-% % Blackbox Function
-% %clc
-% bb = @(x) [29.4*x(1) + 18*x(2);
-%            -(x(1) - 0.2458*x(1)^2/x(2)) + 6];
-% % Bounds      
-% lb = [0;1e-5];
-% ub = [115.8;30];
-% % Starting Guess
-% x0 = [0;1e-5];
-% % Options
-% params = struct('display_degree','2','bb_output_type','OBJ EB','max_bb_eval','50');
-% 
-% [x,fval,hinf,exit_status,nfeval,historyPoints,evalTime] =  nomadOpt(bb,x0,lb,ub,params);
+%% PROBLEM 2
+% Blackbox Function
+%clc
+bb = @(x) [29.4*x(1) + 18*x(2);
+           -(x(1) - 0.2458*x(1)^2/x(2)) + 6];
+% Bounds      
+lb = [0;1e-5];
+ub = [115.8;30];
+% Starting Guess
+x0 = [0;1e-5];
+% Options
+params = struct('display_degree','2','bb_output_type','OBJ EB','max_bb_eval','50');
+
+[x,fval,hinf,exit_status,nfeval,historyPoints,evalTime] =  nomadOpt(bb,x0,lb,ub,params);
 % 
 % 
 % 

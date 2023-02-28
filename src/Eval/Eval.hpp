@@ -170,6 +170,12 @@ public:
                 const BBOutputTypeList &bbOutputTypeList,
                 const bool evalOk = true);
 
+    /// Set blackbox output with higher precision, since double->string will cause precision lost
+    void setBBO(const std::string &bbo,
+                const ArrayOfDouble &bboArray,
+                const BBOutputTypeList &bbOutputTypeList,
+                const bool evalOk);
+
     /*---------------*/
     /* Other methods */
     /*---------------*/

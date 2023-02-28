@@ -95,6 +95,16 @@ public:
      */
     explicit BBOutput(const std::string &rawBBO, const bool evalOk = true);
 
+    /// Constructor 2 with higher precision
+    /**
+     Usually if we have a rawBBO we can assume that the evaluation went OK.
+     But Constructor 1 use string to pass data, which will cause precision lost.
+     \param rawBBO  The outputs of the blackbox as a string -- \b IN.
+     \param bboArray The BBO output with higher precision in double format -- \b IN.
+     \param evalOk  The eval ok flag -- \b IN.
+     */
+    explicit BBOutput(const std::string &rawBBO, const ArrayOfDouble &bboArray, const bool evalOk = true);
+
     /*---------*/
     /* Get/Set */
     /*---------*/

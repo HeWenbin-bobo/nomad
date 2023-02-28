@@ -77,6 +77,18 @@ NOMAD::BBOutput::BBOutput(const std::string &rawBBO, const bool evalOk)
 }
 
 
+/*----------------------------------------------------------------------*/
+/*                            Constructor 2                             */
+/*----------------------------------------------------------------------*/
+// Reading BBOutput from string
+NOMAD::BBOutput::BBOutput(const std::string &rawBBO, const NOMAD::ArrayOfDouble &bboArray, const bool evalOk)
+  : _rawBBO(rawBBO),
+    _evalOk(evalOk),
+    _BBO(bboArray)
+{
+}
+
+
 void NOMAD::BBOutput::setBBO(const std::string &bbOutputString, const bool evalOk)
 {
     _rawBBO = bbOutputString;
