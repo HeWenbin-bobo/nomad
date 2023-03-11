@@ -614,7 +614,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	//Save History Points & fvals
     std::vector<NOMAD::EvalPoint> evalPointsHistory;
     size_t evalPointsHistorySize = NOMAD::CacheBase::getInstance()->getAllPoints(evalPointsHistory);
-    plhs[5] = mxCreateDoubleMatrix(evalPointsHistorySize, ndec+1, mxREAL);
+    plhs[5] = mxCreateDoubleMatrix(evalPointsHistorySize, ndec+2, mxREAL);
     double *historyPoints = mxGetPr(plhs[5]);
     int j;
     NOMAD::Point evalPointTemp;
@@ -626,6 +626,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             historyPoints[evalPointsHistorySize*j+i] = evalPointTemp[j].todouble();
         }
         historyPoints[evalPointsHistorySize*ndec+i] = evalPointsHistory[i].getF().todouble();
+        historyPoints[evalPointsHistorySize*(ndec+1)+i] = evalPointsHistory[i].getH().todouble();
     }
 
     //Save evaluation time for bb fun
